@@ -2,7 +2,7 @@ package com.traveldiary.app.presentation.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.traveldiary.app.data.SupabaseManager
+import com.traveldiary.app.data.remote.SupabaseManager
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.MutableStateFlow

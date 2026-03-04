@@ -60,4 +60,5 @@ dependencies {
     implementation("io.ktor:ktor-client-android:3.3.3")
     implementation("io.github.jan-tennert.supabase:storage-kt")
     implementation(libs.coil.compose)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
 }
