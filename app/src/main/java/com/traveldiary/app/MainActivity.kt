@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.traveldiary.app.navigation.TravelDiaryNavGraph
 import com.traveldiary.app.ui.theme.TravelDiaryTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TravelDiaryTheme {
+                TravelDiaryNavGraph()
             }
         }
     }

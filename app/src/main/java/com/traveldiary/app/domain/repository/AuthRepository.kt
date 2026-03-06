@@ -9,4 +9,6 @@ interface AuthRepository {
     suspend fun logout()
 
     fun isUserLoggedIn(): Boolean
+
+//    suspend fun loginWithGoogle()
 }

@@ -70,6 +70,19 @@ class AuthViewModel(
         }
     }
 
+//    fun loginWithGoogle(onSuccess: () -> Unit) {
+//        viewModelScope.launch {
+//            try {
+//                repository.loginWithGoogle()
+//                onSuccess()
+//            } catch (e: Exception) {
+//                _uiState.update {
+//                    it.copy(errorMessage = e.message ?: "Google login failed")
+//                }
+//            }
+//        }
+//    }
+
     fun logout(onLoggedOut: () -> Unit) {
         viewModelScope.launch {
             repository.logout()
