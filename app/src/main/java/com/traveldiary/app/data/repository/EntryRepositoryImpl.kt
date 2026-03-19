@@ -25,17 +25,20 @@ class EntryRepositoryImpl : EntryRepository {
 
         val response = client.postgrest["entries"]
             .select {
-                filter {
-                    eq("user_id", userId)
-                }
-                order("created_at", Order.DESCENDING)
+                order(
+                    column = "created_at",
+                    order = Order.DESCENDING
+                )
             }
             .decodeList<EntryDto>()
 
-        emit(response.map { it.toDomain() })
+        emit(
+            response
+                .map { it.toDomain() }
+                .sortedByDescending { it.createdAt }
+        )
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getEntryById(id: String): Entry? {
 
         val userId = client.auth.currentUserOrNull()?.id

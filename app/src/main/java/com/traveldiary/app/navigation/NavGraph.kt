@@ -51,7 +51,14 @@ fun TravelDiaryNavGraph() {
         }
 
         composable<Home> {
-            HomeScreen()
+            HomeScreen(
+                onEntryClick = { entryId ->
+                    navController.navigate("add_edit?entryId=$entryId")
+                },
+                onAddClick = {
+                    navController.navigate("add_edit")
+                }
+            )
         }
     }
 }
