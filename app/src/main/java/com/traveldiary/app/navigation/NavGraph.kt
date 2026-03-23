@@ -5,6 +5,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.traveldiary.app.presentation.addedit.AddEditEntryScreen
 import com.traveldiary.app.presentation.auth.AuthScreen
 import com.traveldiary.app.presentation.home.HomeScreen
 import com.traveldiary.app.presentation.splash.SplashScreen
@@ -57,6 +59,18 @@ fun TravelDiaryNavGraph() {
                 },
                 onAddClick = {
                     navController.navigate("add_edit")
+                }
+            )
+        }
+
+        composable<AddEdit> { backStackEntry ->
+
+            val args = backStackEntry.toRoute<AddEdit>()
+
+            AddEditEntryScreen(
+                entryId = args.entryId,
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

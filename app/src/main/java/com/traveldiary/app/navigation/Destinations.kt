@@ -10,3 +10,6 @@ object Home
 
 @Serializable
 object Auth
+
+@Serializable
+data class AddEdit(val entryId: String? = null)
