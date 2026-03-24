@@ -1,14 +1,28 @@
 package com.traveldiary.app.presentation.addedit
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.traveldiary.app.ui.theme.TravelDiaryTheme
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun AddEditEntryScreen(
     entryId: String? = null,
     onNavigateBack: () -> Unit
 ) {
+
+    val context = LocalContext.current
 
     var state by remember {
         mutableStateOf(
@@ -19,9 +33,58 @@ fun AddEditEntryScreen(
         )
     }
 
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) {
+        }
+    }
+
+    val takePictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success && imageUri != null) {
+            state = state.copy(imageUrl = imageUri.toString())
+        }
+    }
+
+    fun createImageFile(): File {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+            .format(Date())
+
+        return File.createTempFile(
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            context.cacheDir
+        )
+    }
+
     AddEditEntryContent(
         state = state,
-        onCaptureClick = { /* Camera in Commit 11 */ },
+        onCaptureClick = {
+
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+
+                val photoFile = createImageFile()
+
+                imageUri = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.provider",
+                    photoFile
+                )
+
+                takePictureLauncher.launch(imageUri!!)
+
+            } else {
+                permissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        },
         onNoteChange = { state = state.copy(note = it) },
         onSaveClick = { onNavigateBack() },
         onDeleteClick = { onNavigateBack() }
