@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.traveldiary.app.ui.theme.TravelDiaryTheme
 import java.io.File
 import java.text.SimpleDateFormat
@@ -23,6 +24,7 @@ fun AddEditEntryScreen(
 ) {
 
     val context = LocalContext.current
+    val viewModel: AddEditViewModel = viewModel()
 
     var state by remember {
         mutableStateOf(
@@ -34,13 +36,11 @@ fun AddEditEntryScreen(
     }
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageFile by remember { mutableStateOf<File?>(null) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (!granted) {
-        }
-    }
+    ) { }
 
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -51,8 +51,10 @@ fun AddEditEntryScreen(
     }
 
     fun createImageFile(): File {
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
-            .format(Date())
+        val timeStamp = SimpleDateFormat(
+            "yyyyMMdd_HHmmss",
+            Locale.getDefault()
+        ).format(Date())
 
         return File.createTempFile(
             "JPEG_${timeStamp}_",
@@ -63,6 +65,7 @@ fun AddEditEntryScreen(
 
     AddEditEntryContent(
         state = state,
+
         onCaptureClick = {
 
             if (ContextCompat.checkSelfPermission(
@@ -72,6 +75,7 @@ fun AddEditEntryScreen(
             ) {
 
                 val photoFile = createImageFile()
+                imageFile = photoFile
 
                 imageUri = FileProvider.getUriForFile(
                     context,
@@ -85,9 +89,24 @@ fun AddEditEntryScreen(
                 permissionLauncher.launch(Manifest.permission.CAMERA)
             }
         },
-        onNoteChange = { state = state.copy(note = it) },
-        onSaveClick = { onNavigateBack() },
-        onDeleteClick = { onNavigateBack() }
+
+        onNoteChange = {
+            state = state.copy(note = it)
+        },
+
+        onSaveClick = {
+
+            viewModel.saveEntry(
+                imageFile = imageFile,
+                note = state.note
+            ) {
+                onNavigateBack()
+            }
+        },
+
+        onDeleteClick = {
+            onNavigateBack()
+        }
     )
 }
 
