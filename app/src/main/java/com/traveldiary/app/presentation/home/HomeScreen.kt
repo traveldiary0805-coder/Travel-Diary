@@ -1,6 +1,7 @@
 package com.traveldiary.app.presentation.home
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -15,6 +16,10 @@ fun HomeScreen(
 ) {
 
     val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadEntries()
+    }
 
     HomeContent(
         state = state,

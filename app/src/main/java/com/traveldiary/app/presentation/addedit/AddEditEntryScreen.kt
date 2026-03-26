@@ -5,6 +5,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,17 +29,11 @@ fun AddEditEntryScreen(
     val context = LocalContext.current
     val viewModel: AddEditViewModel = viewModel()
 
-    var state by remember {
-        mutableStateOf(
-            AddEditEntryUiState(
-                entryId = entryId,
-                isEditMode = entryId != null
-            )
-        )
-    }
+    val state by viewModel.uiState.collectAsState()
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var imageFile by remember { mutableStateOf<File?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -46,7 +43,7 @@ fun AddEditEntryScreen(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success && imageUri != null) {
-            state = state.copy(imageUrl = imageUri.toString())
+            viewModel.onImageCaptured(imageUri.toString())
         }
     }
 
@@ -63,11 +60,16 @@ fun AddEditEntryScreen(
         )
     }
 
+    LaunchedEffect(entryId) {
+        if (entryId != null) {
+            viewModel.loadEntry(entryId)
+        }
+    }
+
     AddEditEntryContent(
         state = state,
 
         onCaptureClick = {
-
             if (ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.CAMERA
@@ -91,23 +93,55 @@ fun AddEditEntryScreen(
         },
 
         onNoteChange = {
-            state = state.copy(note = it)
+            viewModel.onNoteChange(it)
         },
 
         onSaveClick = {
 
-            viewModel.saveEntry(
-                imageFile = imageFile,
-                note = state.note
-            ) {
-                onNavigateBack()
+            if (entryId == null) {
+                viewModel.saveEntry(imageFile, state.note) {
+                    onNavigateBack()
+                }
+            } else {
+                viewModel.updateEntry(entryId, imageFile, state.note) {
+                    onNavigateBack()
+                }
             }
         },
 
         onDeleteClick = {
-            onNavigateBack()
+            showDeleteDialog = true
         }
     )
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        entryId?.let {
+                            viewModel.deleteEntry(it) {
+                                onNavigateBack()
+                            }
+                        }
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDeleteDialog = false }
+                ) {
+                    Text("Cancel")
+                }
+            },
+            title = { Text("Delete Entry") },
+            text = { Text("Are you sure you want to delete this memory?") }
+        )
+    }
 }
 
 @Preview(showBackground = true)

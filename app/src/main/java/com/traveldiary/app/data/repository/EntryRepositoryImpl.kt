@@ -89,4 +89,62 @@ class EntryRepositoryImpl : EntryRepository {
             )
         )
     }
+
+    override suspend fun updateEntry(
+        entryId: String,
+        imageFile: File?,
+        note: String
+    ) {
+
+        val user = client.auth.currentUserOrNull()
+            ?: throw Exception("User not authenticated")
+
+        var imageUrl: String? = null
+
+        if (imageFile != null) {
+
+            val fileName = "${UUID.randomUUID()}.jpg"
+            val bytes = imageFile.readBytes()
+
+            client.storage["travel-images"].upload(
+                path = fileName,
+                data = bytes
+            ) {
+                upsert = false
+            }
+
+            imageUrl = client.storage["travel-images"]
+                .publicUrl(fileName)
+        }
+
+        val updateMap = mutableMapOf<String, Any>(
+            "note" to note
+        )
+
+        if (imageUrl != null) {
+            updateMap["image_url"] = imageUrl
+        }
+
+        client.postgrest["entries"]
+            .update(updateMap) {
+                filter {
+                    eq("id", entryId)
+                    eq("user_id", user.id)
+                }
+            }
+    }
+
+    override suspend fun deleteEntry(entryId: String) {
+
+        val user = client.auth.currentUserOrNull()
+            ?: throw Exception("User not authenticated")
+
+        client.postgrest["entries"]
+            .delete {
+                filter {
+                    eq("id", entryId)
+                    eq("user_id", user.id)
+                }
+            }
+    }
 }

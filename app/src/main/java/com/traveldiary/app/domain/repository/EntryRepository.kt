@@ -14,4 +14,12 @@ interface EntryRepository {
         imageFile: File,
         note: String
     )
+
+    suspend fun updateEntry(
+        entryId: String,
+        imageFile: File?,
+        note: String
+    )
+
+    suspend fun deleteEntry(entryId: String)
 }
