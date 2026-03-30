@@ -147,4 +147,15 @@ class EntryRepositoryImpl : EntryRepository {
                 }
             }
     }
+
+    override suspend fun getEntriesOnce(): List<Entry> {
+
+        val response = client.postgrest["entries"]
+            .select {
+                order("created_at", Order.DESCENDING)
+            }
+            .decodeList<EntryDto>()
+
+        return response.map { it.toDomain() }
+    }
 }

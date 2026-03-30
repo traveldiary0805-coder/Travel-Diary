@@ -22,4 +22,6 @@ interface EntryRepository {
     )
 
     suspend fun deleteEntry(entryId: String)
+
+    suspend fun getEntriesOnce(): List<Entry>
 }
