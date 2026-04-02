@@ -10,16 +10,17 @@ import com.traveldiary.app.domain.model.Entry
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = viewModel(),
     onEntryClick: (String) -> Unit,
     onAddClick: () -> Unit
 ) {
 
-    val state by viewModel.uiState.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
-    LaunchedEffect(Unit) {
-        viewModel.loadEntries()
-    }
+    val viewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(context)
+    )
+
+    val state by viewModel.uiState.collectAsState()
 
     HomeContent(
         state = state,
