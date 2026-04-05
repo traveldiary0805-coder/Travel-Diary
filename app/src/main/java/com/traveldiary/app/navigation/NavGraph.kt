@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.traveldiary.app.presentation.addedit.AddEditEntryScreen
 import com.traveldiary.app.presentation.auth.AuthScreen
 import com.traveldiary.app.presentation.home.HomeScreen
+import com.traveldiary.app.presentation.settings.SettingsScreen
 import com.traveldiary.app.presentation.splash.SplashScreen
 import com.traveldiary.app.presentation.splash.SplashViewModel
 
@@ -71,6 +72,17 @@ fun TravelDiaryNavGraph() {
                 entryId = args.entryId,
                 onNavigateBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Settings> {
+
+            SettingsScreen(
+                onLogoutNavigate = {
+                    navController.navigate(Auth) {
+                        popUpTo<Home> { inclusive = true }
+                    }
                 }
             )
         }
