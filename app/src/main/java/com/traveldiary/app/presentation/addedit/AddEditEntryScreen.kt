@@ -5,12 +5,20 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -115,10 +123,32 @@ fun AddEditEntryScreen(
     )
 
     if (showDeleteDialog) {
+
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
+
+            shape = RoundedCornerShape(28.dp),
+
+            containerColor = MaterialTheme.colorScheme.surface,
+
+            title = {
+                Text(
+                    text = "Delete Memory",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.error
+                )
+            },
+
+            text = {
+                Text(
+                    text = "Are you sure you want to permanently delete this memory? This action cannot be undone.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = {
                         showDeleteDialog = false
                         entryId?.let {
@@ -126,20 +156,28 @@ fun AddEditEntryScreen(
                                 onNavigateBack()
                             }
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(14.dp)
                 ) {
-                    Text("Delete")
+                    Text(
+                        "Delete",
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             },
+
             dismissButton = {
-                TextButton(
-                    onClick = { showDeleteDialog = false }
+                OutlinedButton(
+                    onClick = { showDeleteDialog = false },
+                    shape = RoundedCornerShape(14.dp)
                 ) {
                     Text("Cancel")
                 }
-            },
-            title = { Text("Delete Entry") },
-            text = { Text("Are you sure you want to delete this memory?") }
+            }
         )
     }
 }

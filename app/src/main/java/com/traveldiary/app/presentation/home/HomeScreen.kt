@@ -7,11 +7,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.traveldiary.app.domain.model.Entry
+import com.traveldiary.app.ui.theme.TravelDiaryTheme
 
 @Composable
 fun HomeScreen(
     onEntryClick: (String) -> Unit,
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
 
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -25,7 +27,8 @@ fun HomeScreen(
     HomeContent(
         state = state,
         onEntryClick = onEntryClick,
-        onAddClick = onAddClick
+        onAddClick = onAddClick,
+        onSettingsClick = onSettingsClick
     )
 }
 
@@ -48,11 +51,14 @@ fun HomePreview() {
         )
     )
 
-    HomeContent(
-        state = HomeUiState(
-            entries = fakeEntries
-        ),
-        onEntryClick = {},
-        onAddClick = {}
-    )
+    TravelDiaryTheme {
+        HomeContent(
+            state = HomeUiState(
+                entries = fakeEntries
+            ),
+            onEntryClick = {},
+            onAddClick = {},
+            onSettingsClick = {}
+        )
+    }
 }

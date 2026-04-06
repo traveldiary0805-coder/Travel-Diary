@@ -1,15 +1,20 @@
 package com.traveldiary.app.presentation.addedit
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -24,7 +29,15 @@ fun AddEditEntryContent(
     onDeleteClick: () -> Unit
 ) {
 
+    val gradient = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.secondary
+        )
+    )
+
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
                 title = {
@@ -32,78 +45,162 @@ fun AddEditEntryContent(
                         text = if (state.isEditMode)
                             "Edit Memory"
                         else
-                            "New Memory"
+                            "New Memory",
+                        fontWeight = FontWeight.Bold
                     )
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = Color.White
+                )
             )
         }
     ) { padding ->
 
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(gradient)
                 .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            // Image Preview Area
-            Box(
+            Surface(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(Color.LightGray),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(20.dp),
+                shape = RoundedCornerShape(32.dp),
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                tonalElevation = 8.dp,
+                shadowElevation = 10.dp
             ) {
-                if (state.imageUrl != null) {
-                    AsyncImage(
-                        model = state.imageUrl,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Text(
-                        text = "No Image Selected",
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
 
-            Button(
-                onClick = onCaptureClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Capture Photo")
-            }
-
-            OutlinedTextField(
-                value = state.note,
-                onValueChange = onNoteChange,
-                label = { Text("Write your memory...") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                maxLines = 5
-            )
-
-            Button(
-                onClick = onSaveClick,
-                modifier = Modifier.fillMaxWidth(),
-                enabled = state.note.isNotBlank()
-            ) {
-                Text("Save")
-            }
-
-            if (state.isEditMode) {
-                Button(
-                    onClick = onDeleteClick,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
-                    )
+                Column(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(22.dp)
                 ) {
-                    Text("Delete")
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(240.dp)
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+                            )
+                    ) {
+
+                        if (state.imageUrl != null) {
+                            AsyncImage(
+                                model = state.imageUrl,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Add a memory 📸",
+                                    color = MaterialTheme.colorScheme.primary,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+
+                        FloatingActionButton(
+                            onClick = onCaptureClick,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(16.dp),
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = Color.White,
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CameraAlt,
+                                contentDescription = "Capture"
+                            )
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = state.note,
+                        onValueChange = onNoteChange,
+                        label = { Text("Write your memory...") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(130.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        maxLines = 6,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                        )
+                    )
+
+                    if (!state.isEditMode) {
+
+                        Button(
+                            onClick = onSaveClick,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            enabled = state.note.isNotBlank(),
+                            shape = RoundedCornerShape(20.dp)
+                        ) {
+                            Text(
+                                "Save Memory",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                    } else {
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+
+                            Button(
+                                onClick = onSaveClick,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(56.dp),
+                                shape = RoundedCornerShape(20.dp)
+                            ) {
+                                Text(
+                                    "Update",
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+
+                            OutlinedButton(
+                                onClick = onDeleteClick,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(56.dp),
+                                shape = RoundedCornerShape(20.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                ),
+                                border = BorderStroke(
+                                    1.dp,
+                                    MaterialTheme.colorScheme.error
+                                )
+                            ) {
+                                Text("Delete")
+                            }
+                        }
+                    }
                 }
             }
         }

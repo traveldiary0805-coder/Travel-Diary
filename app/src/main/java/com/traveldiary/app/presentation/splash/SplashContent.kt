@@ -15,14 +15,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.traveldiary.app.ui.theme.GreenAccent
 
 @Composable
 fun SplashContent() {
 
     Box(
         modifier = Modifier
-            .fillMaxSize(),
-//            .background(LightBackground),
+            .fillMaxSize()
+            .background(GreenAccent),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -42,7 +43,7 @@ fun SplashContent() {
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = 1.sp
                 ),
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.surface,
                 textAlign = TextAlign.Center,
                 maxLines = 1
             )
