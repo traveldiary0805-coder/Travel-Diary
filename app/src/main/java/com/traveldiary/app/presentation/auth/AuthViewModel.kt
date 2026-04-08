@@ -1,5 +1,6 @@
 package com.traveldiary.app.presentation.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traveldiary.app.data.repository.AuthRepositoryImpl
@@ -70,18 +71,23 @@ class AuthViewModel(
         }
     }
 
-//    fun loginWithGoogle(onSuccess: () -> Unit) {
-//        viewModelScope.launch {
-//            try {
-//                repository.loginWithGoogle()
-//                onSuccess()
-//            } catch (e: Exception) {
-//                _uiState.update {
-//                    it.copy(errorMessage = e.message ?: "Google login failed")
-//                }
-//            }
-//        }
-//    }
+    fun loginWithGoogleToken(
+        idToken: String,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                repository.loginWithGoogleToken(idToken)
+                onSuccess()
+
+            } catch (e: Exception) {
+
+                _uiState.update {
+                    it.copy(errorMessage = "Google login failed")
+                }
+            }
+        }
+    }
 
     fun logout(onLoggedOut: () -> Unit) {
         viewModelScope.launch {

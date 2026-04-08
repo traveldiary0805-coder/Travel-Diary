@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.traveldiary.app.data.remote.SupabaseManager
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -27,10 +28,12 @@ class SplashViewModel : ViewModel() {
                 when (status) {
 
                     is SessionStatus.Authenticated -> {
+                        delay(1000)
                         _destination.value = SplashDestination.Home
                     }
 
                     is SessionStatus.NotAuthenticated -> {
+                        delay(1000)
                         _destination.value = SplashDestination.Auth
                     }
 

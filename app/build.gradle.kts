@@ -69,4 +69,5 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.material)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
 }

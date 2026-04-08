@@ -36,6 +36,8 @@ fun AddEditEntryContent(
         )
     )
 
+    val canSubmit = state.note.isNotBlank() && state.imageUrl != null
+
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
@@ -105,7 +107,7 @@ fun AddEditEntryContent(
                             ) {
                                 Text(
                                     text = "Add a memory 📸",
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     textAlign = TextAlign.Center
                                 )
                             }
@@ -152,7 +154,7 @@ fun AddEditEntryContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
-                            enabled = state.note.isNotBlank(),
+                            enabled = canSubmit,
                             shape = RoundedCornerShape(20.dp)
                         ) {
                             Text(
@@ -179,7 +181,8 @@ fun AddEditEntryContent(
                             ) {
                                 Text(
                                     "Update",
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
 

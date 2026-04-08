@@ -175,7 +175,10 @@ fun AddEditEntryScreen(
                     onClick = { showDeleteDialog = false },
                     shape = RoundedCornerShape(14.dp)
                 ) {
-                    Text("Cancel")
+                    Text(
+                        "Cancel",
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         )

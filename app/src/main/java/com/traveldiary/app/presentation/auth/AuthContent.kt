@@ -38,7 +38,8 @@ fun AuthContent(
     onPasswordChange: (String) -> Unit,
     onSubmit: () -> Unit,
     onToggleMode: () -> Unit,
-    onErrorShown: () -> Unit
+    onErrorShown: () -> Unit,
+    onGoogleClick: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -156,7 +157,7 @@ fun AuthContent(
                     }
 
                     Button(
-                        onClick = { /* Google login later */ },
+                        onClick = onGoogleClick,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),

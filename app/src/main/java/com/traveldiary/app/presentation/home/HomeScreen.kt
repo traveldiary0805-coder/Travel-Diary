@@ -5,6 +5,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.traveldiary.app.domain.model.Entry
 import com.traveldiary.app.ui.theme.TravelDiaryTheme
@@ -23,6 +25,18 @@ fun HomeScreen(
     )
 
     val state by viewModel.uiState.collectAsState()
+
+    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.addObserver(
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    viewModel.loadEntries()
+                }
+            }
+        )
+    }
 
     HomeContent(
         state = state,

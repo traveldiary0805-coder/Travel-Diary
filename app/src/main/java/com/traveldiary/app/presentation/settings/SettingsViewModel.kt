@@ -3,6 +3,7 @@ package com.traveldiary.app.presentation.settings
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.traveldiary.app.data.local.AppDatabase
 import com.traveldiary.app.data.remote.SupabaseManager
 import io.github.jan.supabase.auth.auth
@@ -14,10 +15,18 @@ class SettingsViewModel(
 
     private val database = AppDatabase.getDatabase(context)
 
-    fun logout(onLoggedOut: () -> Unit) {
+    fun logout(
+        googleSignInClient: GoogleSignInClient,
+        onLoggedOut: () -> Unit
+    ) {
         viewModelScope.launch {
+
             SupabaseManager.client.auth.signOut()
-            onLoggedOut()
+
+            googleSignInClient.signOut().addOnCompleteListener {
+
+                onLoggedOut()
+            }
         }
     }
 
