@@ -93,7 +93,7 @@ fun AuthContent(
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.surfaceVariant
                     )
 
                     OutlinedTextField(
@@ -152,7 +152,8 @@ fun AuthContent(
                                 "Register",
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.SemiBold
-                            )
+                            ),
+                            color = Color.White
                         )
                     }
 
@@ -179,7 +180,8 @@ fun AuthContent(
                             text = "Continue with Google",
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.SemiBold
-                            )
+                            ),
+                            color = MaterialTheme.colorScheme.surfaceVariant
                         )
                     }
 
@@ -192,7 +194,7 @@ fun AuthContent(
                                 "New here? Create an account"
                             else
                                 "Already have an account? Login",
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Medium
                             )

@@ -10,6 +10,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.traveldiary.app.ui.theme.SurfaceLight
 
 private val DarkColorScheme = darkColorScheme(
     primary = GreenAccent,
@@ -19,7 +20,8 @@ private val DarkColorScheme = darkColorScheme(
     background = BackgroundDark,
     surface = SurfaceDark,
     onBackground = Color.White,
-    onSurface = Color.White
+    onSurface = Color.White,
+    surfaceVariant = SurfaceLight
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -30,7 +32,8 @@ private val LightColorScheme = lightColorScheme(
     background = BackgroundLight,
     surface = SurfaceLight,
     onBackground = Color.Black,
-    onSurface = Color.Black
+    onSurface = Color.Black,
+    surfaceVariant = SurfaceDark
 )
 @Composable
 fun TravelDiaryTheme(
