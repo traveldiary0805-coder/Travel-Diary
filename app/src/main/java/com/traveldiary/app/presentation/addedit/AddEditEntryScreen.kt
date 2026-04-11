@@ -1,6 +1,7 @@
 package com.traveldiary.app.presentation.addedit
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -34,8 +35,18 @@ fun AddEditEntryScreen(
     onNavigateBack: () -> Unit
 ) {
 
+    class AddEditViewModelFactory(
+        private val context: Context
+    ) : androidx.lifecycle.ViewModelProvider.Factory {
+        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+            return AddEditViewModel(context) as T
+        }
+    }
+
     val context = LocalContext.current
-    val viewModel: AddEditViewModel = viewModel()
+    val viewModel: AddEditViewModel = viewModel(
+        factory = AddEditViewModelFactory(context)
+    )
 
     val state by viewModel.uiState.collectAsState()
 

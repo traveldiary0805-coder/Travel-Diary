@@ -3,10 +3,7 @@ package com.traveldiary.app.presentation.home
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.traveldiary.app.data.local.AppDatabase
-import com.traveldiary.app.data.local.CachedEntryEntity
 import com.traveldiary.app.data.repository.EntryRepositoryImpl
-import com.traveldiary.app.domain.model.Entry
 import com.traveldiary.app.utils.NetworkMonitor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,16 +12,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    context: Context
+    private val context: Context
 ) : ViewModel() {
 
-    private val database = AppDatabase.getDatabase(context)
-    private val dao = database.cachedEntryDao()
-    private val repository = EntryRepositoryImpl()
-    private val networkMonitor = NetworkMonitor(context)
+    private val repository = EntryRepositoryImpl(context)
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState
+
+    private val networkMonitor = NetworkMonitor(context)
 
     init {
         observeNetwork()
@@ -33,8 +29,9 @@ class HomeViewModel(
 
     private fun observeNetwork() {
         viewModelScope.launch {
-            networkMonitor.isConnected.collectLatest { connected ->
+            networkMonitor.isConnected.collect { connected ->
                 if (connected) {
+                    repository.syncWithRemote()
                     loadEntries()
                 }
             }
@@ -43,72 +40,28 @@ class HomeViewModel(
 
     fun loadEntries() {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            _uiState.update {
-                it.copy(isLoading = true, errorMessage = null)
-            }
+            repository.syncWithRemote()
 
             try {
-
-                val localEntries = dao.getAll()
-
-                if (localEntries.isNotEmpty()) {
+                repository.getEntries().collectLatest { entries ->
                     _uiState.update {
-                        it.copy(
-                            entries = localEntries.map { entity ->
-                                Entry(
-                                    id = entity.id,
-                                    imageUrl = entity.imageUrl,
-                                    note = entity.note,
-                                    createdAt = entity.createdAt
-                                )
-                            },
-                            isLoading = false
-                        )
+                        it.copy(entries = entries, isLoading = false)
                     }
                 }
-
-                try {
-                    val remoteEntries = repository.getEntriesOnce()
-
-                    dao.clearAll()
-                    dao.insertAll(
-                        remoteEntries.map { entry ->
-                            CachedEntryEntity(
-                                id = entry.id,
-                                imageUrl = entry.imageUrl,
-                                note = entry.note,
-                                createdAt = entry.createdAt
-                            )
-                        }
-                    )
-
-                    _uiState.update {
-                        it.copy(
-                            entries = remoteEntries,
-                            isLoading = false
-                        )
-                    }
-
-                } catch (e: Exception) {
-                    if (localEntries.isEmpty()) {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                errorMessage = "No internet connection"
-                            )
-                        }
-                    }
-                }
-
             } catch (e: Exception) {
                 _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "Something went wrong"
-                    )
+                    it.copy(isLoading = false, errorMessage = e.message)
                 }
             }
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            repository.syncWithRemote()
+            loadEntries()
         }
     }
 }

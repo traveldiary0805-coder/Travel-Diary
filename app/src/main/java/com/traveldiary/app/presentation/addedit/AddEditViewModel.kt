@@ -1,6 +1,6 @@
 package com.traveldiary.app.presentation.addedit
 
-import android.util.Log
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.traveldiary.app.data.repository.EntryRepositoryImpl
@@ -10,18 +10,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 
-class AddEditViewModel : ViewModel() {
+class AddEditViewModel(
+    private val context: Context
+) : ViewModel() {
 
-    private val repository = EntryRepositoryImpl()
+    private val repository = EntryRepositoryImpl(context)
 
     private val _uiState = MutableStateFlow(AddEditEntryUiState())
     val uiState: StateFlow<AddEditEntryUiState> = _uiState
 
     fun loadEntry(entryId: String) {
         viewModelScope.launch {
-
             val entry = repository.getEntryById(entryId)
-
             entry?.let {
                 _uiState.value = AddEditEntryUiState(
                     entryId = entryId,
@@ -34,22 +34,14 @@ class AddEditViewModel : ViewModel() {
     }
 
     fun onNoteChange(note: String) {
-        _uiState.update {
-            it.copy(note = note)
-        }
+        _uiState.update { it.copy(note = note) }
     }
 
     fun onImageCaptured(uri: String) {
-        _uiState.update {
-            it.copy(imageUrl = uri)
-        }
+        _uiState.update { it.copy(imageUrl = uri) }
     }
 
-    fun saveEntry(
-        imageFile: File?,
-        note: String,
-        onSuccess: () -> Unit
-    ) {
+    fun saveEntry(imageFile: File?, note: String, onSuccess: () -> Unit) {
         if (imageFile == null || note.isBlank()) return
 
         viewModelScope.launch {
@@ -58,22 +50,14 @@ class AddEditViewModel : ViewModel() {
         }
     }
 
-    fun updateEntry(
-        entryId: String,
-        imageFile: File?,
-        note: String,
-        onSuccess: () -> Unit
-    ) {
+    fun updateEntry(entryId: String, imageFile: File?, note: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             repository.updateEntry(entryId, imageFile, note)
             onSuccess()
         }
     }
 
-    fun deleteEntry(
-        entryId: String,
-        onSuccess: () -> Unit
-    ) {
+    fun deleteEntry(entryId: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             repository.deleteEntry(entryId)
             onSuccess()
